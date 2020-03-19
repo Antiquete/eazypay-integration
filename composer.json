@@ -1,0 +1,25 @@
+{
+  "name": "antiquete/eazypay-integration",
+  "description": "PHP 7 Integration for ICICI Eazypay API",
+  "type": "library",
+  "keywords": [
+    "ICICI",
+    "eazypay"
+  ],
+  "license": "LGPL-3.0-only",
+  "authors": [
+    {
+      "name": "Hari Saksena",
+      "email": "hari.mail@protonmail.ch"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "phpseclib/mcrypt_compat": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Antiquete\\Eazypay\\": "src/"
+    }
+  }
+}
