@@ -16,32 +16,28 @@
 
 namespace Antiquete\Eazypay;
 
-use DateTime;
-
 class Transaction{
   private $TransactionID;
-  private DateTime $StartTime;
-  private DateTime $EndTime;
   private $Amount;
   
   public function __construct($amount)
   {
     $this->TransactionID = $this->genTransactionId();
-    $this->StartTime = new DateTime();
-    $this->EndTime = NULL;
     $this->Amount = $amount;
   }
   
-  public function getId()
+  public function id()
   {
     return $this->TransactionID;
   }
-  public function setId()
+  
+  public function refreshId()
   {
     $this->TransactionID = $this->genTransactionId();
+    $this->StartTime = new DateTime();
   }
   
-  public function getAmount()
+  public function amount()
   {
     return $this->Amount;
   }

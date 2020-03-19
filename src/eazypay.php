@@ -58,10 +58,10 @@ class Eazypay{
   {
     $enc_ref      = $this->encrypt($this->MRef);
     $enc_submid   = $this->encrypt($this->SubMID);
-    $enc_amount   = $this->encrypt($transaction->getAmount());
+    $enc_amount   = $this->encrypt($transaction->amount());
     $enc_rurl     = $this->encrypt($this->ReturnURL);
     $enc_paymode  = $this->encrypt($this->Paymode);
-    $enc_mfields  = $this->encrypt($transaction->getId()."|".$this->SubMID."|".$transaction->getAmount());
+    $enc_mfields  = $this->encrypt($transaction->id()."|".$this->SubMID."|".$transaction->amount());
 
     $encUrl = EAZYPAY_URL."merchantid=".$this->MID."&mandatory fields=$enc_mfields&optional fields=&returnurl=$enc_rurl&Reference No=$enc_ref&submerchantid=$enc_submid&transaction amount=$enc_amount&paymode=$enc_paymode";
 
