@@ -56,7 +56,7 @@ class Eazypay{
    */
   public function getLink(Transaction $transaction)
   {
-    $enc_ref      = $this->encrypt($this->MRef);
+    $enc_ref      = $this->encrypt($transaction->id());
     $enc_submid   = $this->encrypt($this->SubMID);
     $enc_amount   = $this->encrypt($transaction->amount());
     $enc_rurl     = $this->encrypt($this->ReturnURL);
