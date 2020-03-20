@@ -86,7 +86,7 @@ class Eazypay{
     return $cipherText;
   }
   
-  // -- Payment Response Handling Functions 
+  // -- Payment Response Handling Functions
   
   /**
    * Handle payment response.
@@ -96,9 +96,9 @@ class Eazypay{
    * @param callable $matchTransactionId - function matchTransactionId($refTransactionId) { return exists($refTransactionId); }
    * @param callable $matchTransactionAmount - function matchTransactionAmount($refTransactionId, $refAmount) { $myTransaction = fetchTransaction($refTransactionId); return ($myTransaction->amount == $refAmount); }
    * @param callable $onSuccess - function onSuccess($refTransactionId);
-   * @param callable $onFail - function onFail($refTransactionId);
+   * @param callable $onFail - function onFail($refTransactionId, $refResponseCode);
    * @param callable $onDeny - function onDeny($refTransactionId, $reason);
-   * @return void
+   * @return bool $responseExists - True if response exists otherwise false;
    */
   public function handlePayment(callable $matchTransactionId,
                                 callable $matchTransactionAmount,
@@ -106,23 +106,24 @@ class Eazypay{
                                 callable $onFail,
                                 callable $onDeny)
   {
+    $responseExists = $this->detectPaymentResponse();
     try
     {
-      if($this->detectPaymentResponse())
+      if($responseExists)
       {
         // Match ReferenceNo
-        if(call_user_func($matchTransactionId, array($_POST['ReferenceNo'])))
+        if(call_user_func_array($matchTransactionId, array($_POST['ReferenceNo'])))
         {
           // Match Response Code
           if($this->matchResponseCode())
           {
             // Match Amount
-            if(call_user_func($matchTransactionAmount, array($_POST['ReferenceNo'], $_POST['Transaction_Amount'])))
+            if(call_user_func_array($matchTransactionAmount, array($_POST['ReferenceNo'], $_POST['Transaction_Amount'])))
             {
               // Match RS
               if($this->matchRS())
               {
-                call_user_func($onSuccess, array($_POST['ReferenceNo']));
+                call_user_func_array($onSuccess, array($_POST['ReferenceNo']));
               }
               else
               {
@@ -136,7 +137,7 @@ class Eazypay{
           }
           else
           {
-            call_user_func($onFail, array($_POST['ReferenceNo']));
+            call_user_func_array($onFail, array($_POST['ReferenceNo'], $_POST['Response_Code']));
           }
         }
         else
@@ -147,7 +148,11 @@ class Eazypay{
     } 
     catch (Exception $e)
     {
-      call_user_func($onDeny, array($_POST['ReferenceNo'], $e->getMessage()));
+      call_user_func_array($onDeny, array($_POST['ReferenceNo'], $e->getMessage()));
+    }
+    finally
+    {
+      return $responseExists; 
     }
   }
   
@@ -156,7 +161,7 @@ class Eazypay{
    *
    * @return bool - True if response exists otherwise false.
    */
-  private function detectPaymentResponse()
+  public function detectPaymentResponse()
   {
     return (isset($_POST['ReferenceNo']) && isset($_POST['Response_Code']));
   }
@@ -195,8 +200,8 @@ class Eazypay{
           $_POST['Interchange_Value']."|".
           $_POST['TDR']."|".
           $_POST['Payment_Mode']."|".
-          $_POST['ReferenceNo']."|".
           $_POST['SubMerchantId']."|".
+          $_POST['ReferenceNo']."|".
           $_POST['TPS']."|".
           $this->Key;
     $hashed = hash("sha512", $rs);
