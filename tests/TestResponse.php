@@ -65,10 +65,10 @@ class TestResponse{
     $this->POSTHeaders = array();
     $this->POSTHeaders['Response_Code'] = 'E000';
     $this->POSTHeaders['Unique_Ref_Number'] = mt_rand(1000000000000000, 9999999999999999);
-    $this->POSTHeaders['Service_Tax_Amount'] = number_format($amount*0.10, 2);
-    $this->POSTHeaders['Processing_Fee_Amount'] = number_format($amount*0.01, 2);
-    $this->POSTHeaders['Total_Amount'] = number_format($amount + $this->POSTHeaders['Service_Tax_Amount'] + $this->POSTHeaders['Processing_Fee_Amount'], 2);
-    $this->POSTHeaders['Transaction_Amount'] = number_format($amount, 2);
+    $this->POSTHeaders['Service_Tax_Amount'] = number_format($amount*0.10, 2, ".", "");
+    $this->POSTHeaders['Processing_Fee_Amount'] = number_format($amount*0.01, 2, ".", "");
+    $this->POSTHeaders['Total_Amount'] = number_format($amount + $this->POSTHeaders['Service_Tax_Amount'] + $this->POSTHeaders['Processing_Fee_Amount'], 2, ".", "");
+    $this->POSTHeaders['Transaction_Amount'] = number_format($amount, 2, ".", "");
     $this->POSTHeaders['Transaction_Date'] = (new DateTime())->format("d-m-Y H:i:s");
     $this->POSTHeaders['Interchange_Value'] = '';
     $this->POSTHeaders['TDR'] = '';
@@ -76,10 +76,12 @@ class TestResponse{
     $this->POSTHeaders['SubMerchantId'] = $submid;
     $this->POSTHeaders['ReferenceNo'] = $transactionId;
     $this->POSTHeaders['ID'] = $mid;
-    $this->POSTHeaders['RS'] = $this->getRS($key);
     $this->POSTHeaders['TPS'] = 'Y';
     $this->POSTHeaders['mandatory_fields'] = $transactionId.'|'.$submid.'|'.$this->POSTHeaders['Transaction_Amount'];
     $this->POSTHeaders['optional_fields'] = 'null';
+    
+    // Generate RS and RSV after filling other fields
+    $this->POSTHeaders['RS'] = $this->getRS($key);
     $this->POSTHeaders['RSV'] = $this->getRSV();
   }
   
@@ -93,10 +95,12 @@ class TestResponse{
     $this->POSTHeaders['SubMerchantId'] = $submid;
     $this->POSTHeaders['ReferenceNo'] = $transactionId;
     $this->POSTHeaders['ID'] = $mid;
-    $this->POSTHeaders['RS'] = $this->getRSV(); // Fill with 128 F.
     $this->POSTHeaders['TPS'] = 'null';
-    $this->POSTHeaders['mandatory_fields'] = $transactionId.'|'.$submid.'|'.number_format($amount, 2);
+    $this->POSTHeaders['mandatory_fields'] = $transactionId.'|'.$submid.'|'.number_format($amount, 2, ".", "");
     $this->POSTHeaders['optional_fields'] = 'null';
+    
+    // Generate RS and RSV after filling other fields
+    $this->POSTHeaders['RS'] = $this->getRSV(); // Fill with 128 F.
     $this->POSTHeaders['RSV'] = $this->getRSV();
   }
   
@@ -141,6 +145,7 @@ class TestResponse{
           $this->POSTHeaders['ReferenceNo']."|".
           $this->POSTHeaders['TPS']."|".
           $key;
+          echo $rs;
     $hashed = hash("sha512", $rs);
     return $hashed;
   }
