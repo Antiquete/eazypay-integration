@@ -1,4 +1,7 @@
 <?php
+namespace Antiquete\Eazypay\Tests;
+
+use DateTime;
 
 class TestResponse{
   
