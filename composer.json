@@ -16,7 +16,8 @@
   "support": {
     "email": "hari.mail@protonmail.ch",
     "issues": "https://gitlab.com/Antiquete/eazypay-integration/-/issues",
-    "source": "https://gitlab.com/Antiquete/eazypay-integration"
+    "source": "https://gitlab.com/Antiquete/eazypay-integration",
+    "wiki": "https://gitlab.com/Antiquete/eazypay-integration/-/wikis/home"
   },
   "require": {
     "php": "^7.2",
