@@ -13,6 +13,11 @@
       "email": "hari.mail@protonmail.ch"
     }
   ],
+  "support": {
+    "email": "hari.mail@protonmail.ch",
+    "issues": "https://gitlab.com/Antiquete/eazypay-integration/-/issues",
+    "source": "https://gitlab.com/Antiquete/eazypay-integration"
+  },
   "require": {
     "php": "^7.2",
     "phpseclib/mcrypt_compat": "^1.0"
