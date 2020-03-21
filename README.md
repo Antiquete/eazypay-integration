@@ -50,13 +50,13 @@ function matchTransactionAmount($refTransactionId, $refAmount) { /* ... */ }
 function onSuccess($refTransactionId) { /* ... */ }
 ```
 
-- onFail - What to do on payment fail?
+- onFail - What to do on payment fail? '\$refResponseCode' will be response code of payment response received, store it along with transaction.
 
 ```php
-function onFail($refTransactionId) { /* ... */ }
+function onFail($refTransactionId, $refResponseCode) { /* ... */ }
 ```
 
-- onDeny - What to do on payment data mismatch. '\$reason' will show the reason why payment was rejected?
+- onDeny - What to do on payment data mismatch? '\$reason' will show the reason why payment was rejected?
 
 ```php
 function onDeny($refTransactionId, $reason) { /* ... */ }
@@ -78,34 +78,27 @@ Workflow to follow,
 - 5. (Optional) Update transcation in database on payment 'onSuccess' or 'onFail'.
 
 ### Examples
-
-To create and store a transaction (Steps 1 & 2),
+To create and store a transaction with unique checking (Steps 1 & 2),
 
 ```php
 use Antiquete\Eazypay\Transaction;
-
-function createTransaction($amount)
+$transaction = new Transaction($amount);
+while($database->existsTransaction($transaction->id())) // Check is a entry with transaction_id exists in database
 {
-    $transaction = new Transaction($amount);
-    if($database->existsTransaction($transaction->getId()))
-    {
-        delete $transaction;
-        return createTransaction($amount);
-    }
-    else
-    {
-        // Insert into database
-        return $transaction;
-    }
+    $transaction->refreshId();  // Keep refreshing ids until a unique id is found.
 }
+// Insert transaction with $transaction->id() in database here.
 ```
 
 To generate payment link (Step 3),
 
 ```php
 use Antiquete\Eazypay\Eazypay;
-
-$eazypay = new Eazypay("Merchant ID", "Merchant Reference", "Sub Merchant Id", "Return URL", "Merchant Key");
+$eazypay = new Eazypay(EAZYPAY_MERCHANT_ID,
+                       EAZYPAY_MERCHANT_REFERENCE,
+                       EAZYPAY_SUBMERCHANT_ID,
+                       EAZYPAY_RETURN_URL,
+                       EAZYPAY_KEY);
 $link = $eazypay->getLink($transaction);
 ```
 
@@ -117,8 +110,8 @@ use Antiquete\Eazypay\Eazypay;
 function matchTransactionId($refTransactionId) { /* ... */ }
 function matchTransactionAmount($refTransactionId, $refAmount) { /* ... */ }
 function onSuccess($refTransactionId) { /* ... */ }
-function onFail($refTransactionId) { /* ... */ }
+function onFail($refTransactionId, $refResponseCode) { /* ... */ }
 function onDeny($refTransactionId, $reason) { /* ... */ }
 
-$eazypay->handlePayment(matchTransactionId, matchTransactionAmount, onSuccess, onFail, onDeny);
+$eazypay->handlePayment('matchTransactionId', 'matchTransactionAmount', 'onSuccess', 'onFail', 'onDeny');   // Return value is a bool representing if payment response was received.
 ```
