@@ -115,3 +115,6 @@ function onDeny($refTransactionId, $reason) { /* ... */ }
 
 $eazypay->handlePayment('matchTransactionId', 'matchTransactionAmount', 'onSuccess', 'onFail', 'onDeny');   // Return value is a bool representing if payment response was received.
 ```
+
+## License
+This is an open source library licensed under the LGPLv3.
